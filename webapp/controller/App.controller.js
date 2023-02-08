@@ -219,6 +219,33 @@ sap.ui.define(
         bMessageOpen = true;
       },
 
+      onSelectionChange: function (oEvent) {
+        var oDetailArea = this.byId("detailArea"),
+          oLayout = this.byId("defaultLayout"),
+          oOldContext = oDetailArea.getBindingContext(),
+          oSearchField = this.byId("searchField"),
+          oUserContext = oEvent.getParameters().listItem.getBindingContext();
+
+        if (oOldContext) {
+          oOldContext.setKeepAlive(false);
+        }
+        // set binding
+        oDetailArea.setBindingContext(oUserContext);
+        // set keepAlive for new context
+        oUserContext.setKeepAlive(true, function () {
+          // hides detail area when context is destroyed
+          oLayout.setSize("100%");
+          oLayout.setResizable(false);
+          oDetailArea.setVisible(false);
+          oSearchField.setWidth("20%");
+        });
+        // resize view
+        oDetailArea.setVisible(true);
+        oLayout.setSize("60%");
+        oLayout.setResizable(true);
+        oSearchField.setWidth("40%");
+      },
+      
       _getText: function (sTextId, aArgs) {
         return this.getOwnerComponent()
           .getModel("i18n")
